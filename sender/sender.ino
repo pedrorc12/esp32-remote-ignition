@@ -6,6 +6,12 @@
 #define rst 14
 #define dio0 2
 
+//input
+#define launchBtn 34
+
+//output
+#define conLaunch 22
+
 // define messages codes
 #define HANDSHAKE 0x7E
 #define PING 0xD0
@@ -47,9 +53,12 @@ void setup()
   // Change sync word (0xF3) to match the receiver
   // The sync word assures you don't get LoRa messages from other LoRa transceivers
   // ranges from 0-0xFF
-  LoRa.setSyncWord(0xF3);
+  LoRa.setSyncWord(0xF1);
   Serial.println("LoRa Initializing OK!");
   state = initial;
+
+  pinMode(launchBtn, INPUT);
+  pinMode(conLaunch, OUTPUT);
 }
 
 void sendByte(byte data)
@@ -111,6 +120,10 @@ void reset()
 
 bool launchCommand()
 {
+  if(digitalRead(launchBtn) == HIGH){
+    digitalWrite(conLaunch, HIGH);
+    return true;
+  }
   return false;
 }
 
@@ -157,7 +170,10 @@ void loop()
 
     response = waitResponse();
       if (response == ACK)
+      {          
         Serial.println("Launch confirmed");
+        state = error;
+      }
       else
         reset();
 

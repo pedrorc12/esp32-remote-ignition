@@ -8,6 +8,7 @@
 
 // define pins used for leds
 #define SetLight 33  
+#define ConfirmedLaunch 32
 
 // define messages codes
 #define HANDSHAKE 0x7E
@@ -38,7 +39,9 @@ void setup()
 
   pinMode(SetLight, OUTPUT);
   digitalWrite(SetLight, LOW);
-
+  pinMode(ConfirmedLaunch, OUTPUT);
+  digitalWrite(ConfirmedLaunch, LOW);
+  
   Serial.println("LoRa Receiver");
 
   // setup LoRa transceiver module
@@ -62,6 +65,7 @@ void setup()
 // launch function, return false in case of errors
 bool launch()
 {
+  digitalWrite(ConfirmedLaunch, HIGH);
   return true;
 }
 
@@ -149,6 +153,7 @@ void loop()
           {
             Serial.println("Launched");
             sendByte(ACK);
+            state = initial;
           }
           else
           {
